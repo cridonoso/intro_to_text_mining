@@ -4,14 +4,14 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{hyperref}
+
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
 \begin{document}
 
 \title{Introducción al Análisis de Textos}
-
-
 % author names and affiliations
 \author{\IEEEauthorblockN{Cristobal Donoso Oliva}
 \IEEEauthorblockA{Dpto. Ciencias de la Computación\\Facultad de Ingeniería\\
@@ -24,10 +24,8 @@ Facultad de Ingeniería\\Universidad de Concepción\\
 Email: rosa.figueroa@biomedica.udec.cl, chrisflores@udec.cl}
 }
 
-
 % make the title area
 \maketitle
-
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
@@ -35,10 +33,8 @@ El texto plano es difícil de procesar automáticamente puesto que una maquina c
 \end{abstract}
 \IEEEpeerreviewmaketitle
 
-
-
 \section{Introducción}
-El análisis de textos consiste en encontrar y extraer información desde texto plano. Una persona podría realizar este proceso de manera sencilla, sin embargo, la cantidad de documentos (y palabras en éste) a analizar podría significar una gran cantidad de tiempo. Alternativamente, podemos hacer uso de algoritmos especializados en las distintas subdivisiones de la minería de textos (MT) [1].\\\\ MT como área de estudio constituye un gran desafío para los investigadores - pues consiste en una convergencia de distintas áreas de especialidad, que van desde la lingüística a las ciencias de la computación.\\\\En el presente informe se dará una introducción a la minería de textos haciendo uso de la famosa novela \textit{The adventures of Sherlock Holmes} de Conan Doyle [2]. En la \textit{sección 2} se describe el pre-procesamiento realizado antes de trabajar con el texto. La \textit{sección 3} muestra distintas operaciones a realizar con el objetivo de extraer información desde el contenido del libro. Finalmente en la \textit{sección 4} se presentan las conclusiones del trabajo.
+El análisis de textos consiste en encontrar y extraer información desde texto plano. Una persona podría realizar este proceso de manera sencilla, sin embargo, la cantidad de documentos (y palabras en éste) a analizar podría significar una gran cantidad de tiempo. Alternativamente, podemos hacer uso de algoritmos especializados en las distintas subdivisiones de la minería de textos (MT) [1].\\\\ MT como área de estudio constituye un gran desafío para los investigadores - pues consiste en una convergencia de distintas áreas de especialidad, que van desde la lingüística a las ciencias de la computación.\\\\En el presente informe se dará una introducción a la minería de textos haciendo uso de la famosa novela \textit{The adventures of Sherlock Holmes} de Conan Doyle [2]. En la \textit{sección 2} se describe el pre-procesamiento realizado antes de trabajar con el texto. La \textit{sección 3} muestra distintas operaciones a realizar con el objetivo de extraer información desde el contenido del libro. Finalmente en la \textit{sección 4} se presentan las conclusiones del trabajo.\\\\{\scriptsize \url{https://github.com/cridonoso/intro_to_text_mining.git}}
 
 \section{Preprocesamiento del texto}
 Comúnmente, antes de analizar el texto debemos estandarizar el contenido léxico, así también, es necesario realizar una limpieza de palabras cuyo aporte no es significativo en el proceso.
@@ -78,7 +74,7 @@ Por otro lado, podemos contar las palabras en el texto. Aquí se justifica muy b
 La ley de Zipf [4] tiene diversas aplicaciones [5]. En textos, describe la distribución de las palabras en un corpus en función de su frecuencia. De esta manera se pueden observar empíricamente fenómenos como que la concentración máxima de palabras consiste en la repetición de un pequeño conjunto de términos. La \textit{figura 3} muestra gráficamente la distribución de frecuencias.
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.5]{img/4.png} 
+\includegraphics[scale=0.35]{img/4.png} 
 \end{center}
 \caption{Porción del grafico que muestra el cumpliento de la ley de Zipf en el texto de Sherlock Holmes}
 \end{figure}
@@ -101,7 +97,7 @@ it & it \\
 \hline 
 \end{tabular} 
 \end{center}
-\section{Conclusión}
+\section{Discusión y Conclusión}
 Hemos revisado algunas técnicas y operaciones que comúnmente se utilizan al realizar análisis de textos. Es importante mencionar que la aplicación de cada una de las operaciones varía según el objetivo de la investigación y el tipo de información a extraer.\\\\El trabajo mostró una breve introducción en el procesamiento automático de textos, sin embargo, ésto constituye un buen comienzo para luego utilizar algoritmos de clasificación o clustering. De esta forma, entrenar modelos de aprendizaje - cuyos resultados permiten detectar patrones en el contenido de documentos - genera grandes avances en el descubrimiento de nuevo conocimiento.\\\\Finalmente, quedan pendientes métodos más sofisticados para extraer información semántica o apegadas al contexto (como una ironía o sentimientos [6]). Aún así, el pre-procesamiento es fundamental en toda aplicación que vincule la minería de textos.  
 \begin{thebibliography}{1}
 
