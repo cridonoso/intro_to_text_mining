@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 import urllib2
 from urllib2 import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 import re
 from nltk import ngrams
+import sys
+import unicodedata
 
 def get_info_who(link):
 	print 'Reading ',link
@@ -26,14 +29,19 @@ def get_info_who(link):
 	page_soup = soup(page_html, "html.parser")
 
 	containers = page_soup.findAll('p')
-
-	for i,(c) in enumerate(containers[0:5]):
+	counter = 1
+	answers = []
+	for i,(c) in enumerate(containers):
 		paragraph = c.text
-		find = re.search(r"\b(es|fue)\s[\w\s ,]+[\b|\.]",paragraph, re.U)
+		find = re.search(r"\b(es|fue)\s(un|una)[\w\s ,]+[\b|\.]",paragraph, re.U|re.I)
 		if find:
 			sentence = find.group()
-			print 'Answer ',str(i),':',sentence
-				
+			#print 'Answer ',str(counter),':',sentence
+			counter+=1
+			if sentence != None:
+				answers.append(sentence)
+	print '-----------------------------------------------------------------------'
+	return answers			
 				
 def get_info_where(link):
 	print 'Reading ',link
@@ -50,11 +58,34 @@ def get_info_where(link):
 	page_soup = soup(page_html, "html.parser")
 
 	containers = page_soup.findAll('p')
-
-	for i,(c) in enumerate(containers[0:5]):
+	counter = 1
+	answers = []
+	for i,(c) in enumerate(containers):
 		paragraph = c.text
-		find = re.search(r"\b(se|esta|estaba)*(ubicada|ubicado|en|localizada|localizado)\s[\w\s ,]+[\b|\.]",paragraph, re.U)
+		find = re.search(r"\b(esta|estaba|ubicada|ubicado|ubica|localizada|localizado)\s[\w\s ,]+[\b|\.]",paragraph, re.U)
 		if find:
 			sentence = find.group()
-			print 'Answer ',str(i),':',sentence
-				
+			#print 'Answer ',str(counter),':',sentence
+			counter+=1
+			answers.append(sentence)
+	print '-----------------------------------------------------------------------'	
+	return answers
+
+def get_n_grams(answers, n):
+	all_ngrams = []
+	for answer in answers:
+		if answer == None:
+			print answer
+		else:
+			for sentence in answer:
+				ngrams_ = ngrams(sentence.split(), n)
+				all_ngrams.append(ngrams_)
+	
+	return all_ngrams
+
+def print_unicode(text):
+    try:
+        text = unicode(text.decode('string-escape'), 'utf-8')
+    except:
+        text = text.decode('unicode-escape')
+    return text
