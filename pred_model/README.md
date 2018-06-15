@@ -1,4 +1,4 @@
-# Generating text randomly based on N-grams
+# Generating text randomly using N-grams Model
 
 ## Requirments 
 - Python 2.7
