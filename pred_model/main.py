@@ -2,7 +2,7 @@ from SimpleModel import *
 
 ngrams = 3
 topic = 'cancer'
-sm = SimpleModel(topic, ngrams)
+sm = SimpleModel(topic, ngrams, 2)
 
 
 
