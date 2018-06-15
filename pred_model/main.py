@@ -1,9 +1,16 @@
 from SimpleModel import *
 
+'''
+========= Script prinicipal. ===========
+Aquí importamos la clase SimpleModel la cual crea un objeto del modelo.
+Con el modelo instanciado seteamos los parametros necesarios; como el numero de
+n grams y el topico que buscamos.
+Podemos hacer todas las consultas que queramos hasta que ingresemos "0".
+'''
+
 ngrams = 3
 topic = 'cancer'
 sm = SimpleModel(topic, ngrams, 2)
-
 
 
 while True:

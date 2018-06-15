@@ -9,6 +9,11 @@ import os
 import time
 
 def search(query):
+    '''
+    Retorna una respuesta con articulos desde pubmed
+    :param query: Topico a buscar
+    :return: Documentos  asociados al topico y ordenados por relevancia
+    '''
     Entrez.email = 'your.email@example.com'
     handle = Entrez.esearch(db='pubmed',
                             sort='relevance',
@@ -19,10 +24,26 @@ def search(query):
     return results
 
 def get_abstract(pmid):
+    '''
+    Entrega el abstract en formato xml. Gracias a los bracket de xml podemos extraer con mayor facilidad
+    el texto que nos interesa
+    :param pmid: id del documento
+    :return: xml del articulo
+    '''
     handle = Entrez.efetch(db='pubmed', id=pmid, retmode='xml', rettype='abstract')
     return handle.read()
 
 def remove_text_inside_brackets(text, brackets="()"):
+    '''
+    Funcion para eliminar el texto entre parentesis. Dado que, generalmente, el texto entre parentesis carece de
+    sentido eliminamos el contenido de este dentro de una oracion. Así por ej:
+    "Las personas dentro del rango normal (50 - 80 kg) viven mejor"
+    En este ejemplo (50 - 80 kg) aporta información pero no sigue la coherencia de la oración por lo tanto
+    lo extraemos.
+    :param text: texto en string
+    :param brackets: tipo de bracket que queremos considerar
+    :return: string sin contenido entre parentesis
+    '''
     count = [0] * (len(brackets) // 2) # count open/close brackets
     saved_chars = []
     for character in text:
@@ -40,6 +61,15 @@ def remove_text_inside_brackets(text, brackets="()"):
     return ''.join(saved_chars)
 
 def get_sentences(text):
+    '''
+    Funcion para extraer el contenido de los corpus separado por oraciones. Luego la gneración de ngrams será correcta:
+    Por ejemplo:
+    ....el gato subió por la pandereta."\n"Dada la creciente...
+     debemos separar ambas oraciones ya que podría generarse un token del tipo:
+     [pandereta, Dada] => y esto no tiene mucho sentido
+    :param text: string en xml
+    :return: lista con oraciones extraidas desde txto entre <AbstractText> </AbstractText>
+    '''
     find = re.findall(r"<AbstractText[>]?.*</AbstractText>", text, re.U | re.I | re.S)
     text = re.sub(r'<[^<]+>', "", str(find), re.U)
     text = ''.join([t for t in text])
@@ -63,6 +93,16 @@ def get_sentences(text):
     return senteces
 
 def standarize_numbers(sentences):
+    '''
+    Las fechas y numero particulares responden a un contexto en particular. Sin embargo,
+    como buscamos generar texto aleatorio no nos interesa mantener el significado conxtual. Así
+    estandarizamos todas las fechas y numero particulares con el objetivo de aumentar su frecuencia
+    Por ejemplo:
+    1987 -> 2018
+    1876 -> 2018
+    :param sentences: Lista de oraciones
+    :return: texto estandarizado
+    '''
     for i,(tokens) in enumerate(sentences):
         for j,(u) in enumerate(tokens):
             if re.match(r'[0-9]+', u):
@@ -73,6 +113,12 @@ def standarize_numbers(sentences):
     return sentences
 
 def get_next_words(resources, n):
+    '''
+    Devuelve la siguiente palabra dado todo el corpus
+    :param resources: lista con oraciones
+    :param n: cantidad de ngrams
+    :return: matrix con tuplas de todas las oraciones. Cada tupla es de la forma (ngram, siguiente_palabra)
+    '''
     data = []
     for resource in resources:
         for sentence in resource:
@@ -84,6 +130,11 @@ def get_next_words(resources, n):
     return list(itertools.chain(*data))
 
 def ngramos(ngrams_vector):
+    '''
+    retorna una tupla con el ngram actual y la siguiente palabra en la oracion
+    :param ngrams_vector: vector con n-grams
+    :return: tuplas del tipo (ngram, siguiente palabra)
+    '''
     matrix = []
     for index in range(0, len(ngrams_vector)-1):
         partial = [ngrams_vector[index],ngrams_vector[index+1][-1]]
@@ -91,6 +142,12 @@ def ngramos(ngrams_vector):
     return matrix
 
 def make_table(uniques, next_words):
+    '''
+    Crea la tabla de palabras unicas vs ngrams
+    :param uniques: lista de palabras unicas
+    :param next_words: matrix con ngrams y sus palabras siguientes segun el corpus
+    :return: Matriz de frecuencia
+    '''
     table = []
     tuple = []
     for i,nw in enumerate(next_words):
@@ -110,7 +167,14 @@ def make_table(uniques, next_words):
     return table,tuple
 
 def generate_model(query, ngrams, max_docs):
-
+    '''
+    Invoca a todos los metodos de más arriba. Busca articulos en pudmed, extrae el abstract, normaliza, genera los ngrams
+    y luego crea la matriz de frecuencia
+    :param query: topico a buscar
+    :param ngrams: cantidad de ngrams
+    :param max_docs: maximo de documentos a buscar
+    :return: tabla de frecuancia, lista de ngrams unicos, lista de palabras unicas
+    '''
     idList = search(query)['IdList']
     resources = []
     if max_docs!=None:
@@ -136,6 +200,16 @@ def generate_model(query, ngrams, max_docs):
     return table,tuple,uniques
 
 def get_proportional(obj, uniques):
+    '''
+    Genera un vector con palabras siguientes. De acuerdo a la frecuencia aumentaremos las ocurrencias del elemento
+    Por ejemplo:
+                | corrio | hola | a |
+    (el gato)   |   3    | 0    | 2 |   ==> v = [corrio, corrio, corrio, a, a]
+    ===================================
+    :param obj: vector de frecuancias asociado a un ngram especifico
+    :param uniques: vector de palabras unicas
+    :return: lista de palabras mas probables con cardinalidad aumentada
+    '''
     vector = []
     for i in range(0, int(len(obj))):
         if obj[i]!=0:
